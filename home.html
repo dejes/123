@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>MethGET</title>
+    <script src="{% static 'js/submit_query.js' %}" defer></script>
+    <script src="{% static 'js/ChangeDisabled.js' %}" defer></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'CSS/navigation_bar.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="{% static 'js/jquery-3.4.1.min.js'  %}" defer></script>
+   	<script src="{% static 'js/main.js'  %}" defer></script>
+   	<script src="{% static 'js/fileupload-ui.js'  %}" defer></script>
+    <script src="{% static 'js/savesubmit.js'  %}" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+
+
+<script>
+	$(document).ready(function(){
+		$("menu.li").css("background-color","lightblue");
+		$("#uplo").css("background-color","gray");
+		});
+</script>
+
+
+<div id="ToolName">
+	<a href="/">
+  <div style="float: left;font-weight:bold;font-size: 35px;color:#3399ff; letter-spacing: 1px;">Meth</div><!--#3399ff; #99ccff-->
+  <div style="float: left;font-weight:bold;font-size: 35px;color: #555555;letter-spacing: 3px;">GET</div></a>
+  <div style="float: left;font-size: 20px;margin-top: 15px;margin-left: 3px;color: #336699;">
+  web-based bioinformatics software for correlating genome-wide DNA methylation and gene expression 
+  </div>
+</div>
+
+
+<div id="menu" style="float: left;">
+  <ul>
+    <!--<li style="width:20% "><a>MethGET</a></li>-->
+      <li style="width:10% " id='welcometomethget'><a href="/">Welcome</a></li>
+      <li style="width:20% " id='uplo'><a href="/upload">Upload and sign in</a></li>
+
+      <li style="width:30% " id="sin"><a href="#">Single Methylome Analyses<b class="arrow"></b></a>
+          <ul>
+            <li><a href="/scatter">Correlation</a></li>
+            <li><a href="/rankscatter">Ordinal Association</a></li>
+            <li><a href="/grouping">Grouping Statistics</a></li>
+            <li><a href="/metaplot">Metagene</a></li>
+         </ul>
+     </li>
+
+      <li style="width:30% " id='multi'><a href="#">Multiple Methylome Analyses<b class="arrow"></b></a>
+          <ul>
+            <li><a href="/deltascatter">Comparison</a></li>
+            <li><a href="/heatmap">Heatmap</a></li>
+          </ul>
+      </li>
+      
+      <li style="width:10% " id='tuto'><a href="/tuto">Tutorial</a></li>
+    </ul>
+</div>
+
+
+
+
+<div id="Sign_in">
+	<div class="well">
+		<p style="font-size:30px;">Sign in</p>
+		<p style="font-size:16px;">
+			Account name:
+			<input type="text" name="Projectname" id="Project_Name" style="width: 170px;"><button type="button" name="sign" id = "sign" value="signin">sign in</button>
+		</p>
+		<p style="font-size:15px;">Try the example account (human CAF data): <a id="humanCAF_example">here</a></p><br><br>
+		<p style="font-size:14px;">The account name will be given when the preprocess finishes. Please upload the data for preprocess.</p>
+
+
+	</div>
+<!--
+	<div id="instruct">
+		<p style="font-size:25px;">upload instruction</p>
+			<ul>
+	            <li><p>Single methylome: check the checkbox of the sample and upload a CGmap.gz and a Exp.txt</p> <p>(0.5hr per methylome for Arabidopsis)</p></li><br>
+
+	            <li><p>metagene: check the checkbox of metagene (3.5hr per metage for Arabidopsis)</p></li><br>
+
+	            <li><p>multiple methylome: needs at least one methylome in group treatment and group control</p></li><br>
+	        </ul>
+
+	</div>-->
+</div>
+
+
+
+<div id="upload" class="well">
+
+	<div id="downloadexample">  
+
+			<h4 id="geneannotationgtffile">Example Data&nbsp; <p style="font-size: 13px;float: right;margin-top: 4px;">(Arabidopsis)</p></h4>
+			<a href="Downloadexample" rel="external nofollow" id="exampledata" class="btn btn-default"> 
+			    <span class="btn-label">
+			        <i class="glyphicon glyphicon-download-alt"></i>
+			    </span> Download Example Data
+			</a>
+		</div>
+
+	<form id='mainform' action='upload' method='post' enctype="multipart/form-data">
+		{% csrf_token %}
+
+		<p style="font-size:30px;">Upload data</p>
+		<p style="font-size:20px;">Step 1: Enter Your Project Name and Email.</p>
+			<div id = Single_Section>
+				Project Name: <input type="text" name="Projectname" id="Projectname"><br><br><!-- value="Projectname"-->
+				Your Email: <input type="text" name="cEmail" id="cEmail" ><br><br> <!--value="youremail@gmail.com"-->
+			</div>
+
+
+	    <p style="font-size:20px;">Step 2: Upload DNA Methylation (CGmap.gz) and Gene Expression Files (Exp.txt).<br></p>
+
+		<div>		    
+		    			
+				<fieldset class="scheduler-border">
+					<legend class="scheduler-border">
+						<nobr style="float: left; width: 100%;font-weight: bold; white-space:nowrap;">Group treatment</nobr>
+					</legend>
+			    	
+					<div class="upoadsample">	
+
+						<input type="checkbox" style="float: left;" name="trt_1" value="trt_1_Selected" onClick="return false;" checked>				
+						<p style="float: left;font-weight: bold;">treatment_1 (trt_1)&nbsp;&nbsp;&nbsp;&nbsp;CGmap.gz&nbsp;&nbsp;</p>
+						<input type="file" style="float: left;width: 200px;" name="trt_1_CGmap" id="trt_1_CGmap" accept=".gz">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<p style="float: left;font-weight: bold;"> Exp.txt&nbsp;&nbsp;</p>
+						<input type="file" style="float: left;width: 200px;" name="trt_1_Exp" id="trt_1_EXP" accept=".txt">
+
+					</div>
+
+					<div style="float: left;width:100%;margin-left: 2%">
+							<input type="checkbox" style="position: relative;/* left: -380px*/; float: left" name="trt_1_premeta" value="trt_1_premeta" checked>
+							<p style="float: left">metagene for trt_1</p><br><br>
+					</div>
+
+					<div class="upoadsample" style="float: left;width:100%">
+						<input type="checkbox" style="float: left;" name="trt_2" id="trt_2_Selected" value="trt_2_Selected" onClick="trt_2_ChangeDisabled('trt_2_Selected')">   <!--'trt_2_Selected'-->
+						<p style="float: left;">treatment_2 (trt_2)&nbsp;&nbsp;&nbsp;&nbsp;CGmap.gz&nbsp;&nbsp;</p>
+						<input type="file" style="float: left;width: 200px;" name="trt_2_CGmap" id="trt_2_CGmap" accept=".CGmap.gz" disabled="disabled">
+						<p style="float: left;">Exp.txt&nbsp;&nbsp;</p>
+						<input type="file" style="float: left;width: 200px;" name="trt_2_Exp" id="trt_2_Exp" accept=".txt" disabled="disabled">
+					</div>
+
+
+					<div class="upoadsample" style="float: left;width:100%">
+						<input type="checkbox" style="float: left;" name="trt_3" id="trt_3_Selected" value="trt_3_Selected" onClick="trt_3_ChangeDisabled('trt_3_Selected')">
+						<p style="float: left;">treatment_3 (trt_3)&nbsp;&nbsp;&nbsp;&nbsp;CGmap.gz&nbsp;&nbsp;</p>
+							<input type="file" style="float: left;width: 200px;" name="trt_3_CGmap" id="trt_3_CGmap" accept=".CGmap.gz" disabled="disabled">
+							<p style="float: left;">Exp.txt&nbsp;&nbsp;</p>
+							<input type="file" style="float: left;width: 200px;" name="trt_3_Exp" id="trt_3_Exp" accept=".txt" disabled="disabled"><br>
+					</div>
+		
+				</fieldset>
+		</div><br>
+
+			<div style="/*position: relative;top: 10px;*/">
+
+				<fieldset class="scheduler-border">
+					<legend class="scheduler-border">
+						<nobr style="float: left; width: 100%; font-weight: bold; white-space:nowrap;">Group control</nobr>
+					</legend>
+						<div class="upoadsample" style="float: left;width:100%">
+							<input type="checkbox" style="float: left;" name="ctrl_1" id="ctrl_1_Selected" value="ctrl_1_Selected" onClick="ctrl_1_ChangeDisabled('ctrl_1_Selected')">
+							<p style="float: left;font-weight: bold;">control_1 (ctrl_1)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CGmap.gz&nbsp;&nbsp;</p>
+							<input type="file" style="float: left;width: 200px;" name="ctrl_1_CGmap" id="ctrl_1_CGmap" accept=".CGmap.gz" disabled="disabled">
+							<p style="float: left;font-weight: bold;">Exp.txt&nbsp;&nbsp;</p>
+							<input type="file" style="float: left;width: 200px;" name="ctrl_1_Exp" id="ctrl_1_Exp" accept=".txt" disabled="disabled"><br>
+						</div>
+
+						<div style="float: left;width:100%;margin-left: 2%">
+								<input type="checkbox" style="position: relative;/* left: -380px*/; float: left" id="ctrl_1_premeta" name="ctrl_1_premeta" value="ctrl_1_premeta" disabled="disabled">
+								<p style="float: left">metagene for ctrl_1</p><br><br>
+						</div>
+
+
+						<div class="upoadsample" style="float: left;width:100%">
+							<input type="checkbox" style="float: left;" name="ctrl_2" id="ctrl_2_Selected" value="ctrl_2_Selected" onClick="ctrl_2_ChangeDisabled('ctrl_2_Selected')">
+							<p style="float: left;">control_2 (ctrl_2)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CGmap.gz&nbsp;&nbsp;</p>
+								<input type="file" style="float: left;width: 200px;"name="ctrl_2_CGmap" id="ctrl_2_CGmap" accept=".CGmap.gz" disabled="disabled">
+								<p style="float: left;">Exp.txt&nbsp;&nbsp;</p>
+								<input type="file" style="float: left;width: 200px;"name="ctrl_2_Exp" id="ctrl_2_Exp" accept=".txt" disabled="disabled"><br>
+						</div>
+						<div class="upoadsample" style="float: left;width:100%">
+							<input type="checkbox" style="float: left;" name="ctrl_3" id="ctrl_3_Selected" value="ctrl_3_Selected" onClick="ctrl_3_ChangeDisabled('ctrl_3_Selected')">
+							<p style="float: left;">control_3 (ctrl_3)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CGmap.gz&nbsp;&nbsp;</p>
+								<input type="file" style="float: left;width: 200px;" name="ctrl_3_CGmap" id="ctrl_3_CGmap" accept=".CGmap.gz" disabled="disabled">
+								<p style="float: left;">Exp.txt&nbsp;&nbsp;</p>
+								<input type="file" style="float: left;width: 200px;" name="ctrl_3_Exp" id="ctrl_3_Exp" accept=".txt" disabled="disabled">
+						</div>
+				</fieldset>
+
+				<div style="/*position: relative;top: 10px;*/">
+					<input id="chk1" type="button" style="WIDTH: 27px; HEIGHT: 30px" value="+" onclick="if(document.getElementById('myid1').style.display=='none'){document.getElementById('myid1').style.display = 'block';}else{document.getElementById('myid1').style.display='none'}" />parameters for metagene
+
+					<span id="myid1" style="display:none;margin-left:20px;">
+
+						<br>
+						<p style="font-size:15px;float: left;width: 100%;font-weight:bold;">groups</p>
+						<p style="font-size:15px;margin-left: 20px;">
+							<input name="n_group" style="float: left;" type="number" value=5 min=0 max=100 style="font-size:15px;height: 22px;width: 50px;">number of groups
+						</p><br>
+
+
+						<p style="font-size:15px;float: left;width: 100%;font-weight:bold;">type</p>
+
+							<div style="float: left;width: 100%;margin-left: 20px;">
+				    			<input type="radio" style="float: left;" name="plot" value="region" onClick="metainput_ChangeDisabled('buildin')" checked>
+				    			<p style="float: left">rigion plot</p>&emsp;
+				    			<input name="region_window" id="region_window" type="number" value=30 min=2 max=60 style="font-size:15px;height: 22px;width: 50px;">window in one gene<br><br>
+
+				        	</div>
+
+				        	<div style="float: left;width: 100%;margin-left: 20px;">
+				        		<input type="radio" style="float: left; font-size:15px;" name="plot" value="site" onClick="metainput_ChangeDisabled('buildin')">
+				        		<p style="float: left">site plot</p>&emsp;&emsp;
+
+
+								<select name="pos" id="pos" style="float: left; margin-left: 20px;height: 20px;" disabled>position
+							    		<option value="TSS">TSS</option>
+							    		<option value="TES">TES</option>
+							    </select>
+					        	<input name="flanking_bp" id="flanking_bp" type="number" value=2 min=1 max=10 style="font-size:15px;height: 22px;width: 50px;" disabled>kb flanking by the choosing position,
+					        	<input name="site_window" id="site_window" type="number" value=10 min=0 max=1000 style="font-size:15px;margin-left: 5px;height: 22px;width: 50px;" disabled>windows of one side<br><br><br><br>
+					       	</div>
+				        
+				        
+				    </span>
+				</div>
+
+			</div><br>
+
+
+			<p style="font-size:20px;">Step 3: Choose The Organism.</p>
+				<div>
+				    <p>
+				    	<input type="radio" name="Organism" value="buildin" id="Select_buildin" onClick="GTF_ChangeDisabled('buildin')" checked>Select build-in annotation.
+				        <select id="GTF_buildin" name="species">
+				        	<option value="Arabidopsis">Arabidopsis thaliana</option>
+				            <option value="human">Homo Sapiens (hg19)</option>
+				            <option value="house_mouse">Mus musculus (mm10)</option>
+				            <option value="rice">Oryza sativa</option>
+				            <option value="Danio_rerio">Danio rerio</option>
+				        </select><br>
+				        <input type="radio" name="Organism" value="customized" id="Select_customized" onClick="GTF_ChangeDisabled('customized')" >Upload gene annotation file (GTF).
+				       	<input type="file" name="GTF" id="GTF_customized" accept=".gtf" disabled><br>
+				    </p>
+				</div>
+
+<!--
+			<p>Step 4: if analyze metaplot</p>
+			    <p>
+			    	<input type="checkbox" name="premeta" value="premeta" checked>preprocess metaplot (it will need nore time to preprocess)<br>
+				</p>
+
+
+				<p style="font-size:15px;">type<br>
+			    	<input type="radio" name="plot" value="region" style="WIDTH: 10px; HEIGHT: 10px" checked>region plot<br>
+			        <input type="radio" name="plot" value="site" style="font-size:15px;">site plot
+				    	<input type="radio" name="pos" value="TSS" style="font-size:15px;" checked>TSS
+				        <input type="radio" name="pos" value="TES" style="font-size:15px;">TES&nbsp;&nbsp;
+				        <input name="flanking_bp" type="number" value=5 min=0 max=100 style="font-size:15px;">bp flanking by the choosing position
+			    </p>
+
+			    number of group<input name="n_group" type="number" value=5 min=0 max=100 style="font-size:15px;"><br><br>
+	
+
+		<p>After you click "submit", you will receive an email that we tell you we are preprocessing the data</p>
+	-->
+
+			    <input class="btn btn-default" type="button" value="Submit" id="homesubmit">
+		&nbsp;&nbsp;<input class="btn btn-default" type="reset" value="reset"><br><br>
+
+
+	<div class="progress" style="width: 100%">
+		<div id="uploadprogress" class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0%;height: 40px;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+	</div>	
+
+	<p style="font-size: 13px;">Don't close this page until files are uploaded (progress bar to 100%)</p>
+	<!--
+	<input id="cancel_upload" class="cancel" type="button" value="cancel" style="float: left;height: 20px;font-size: 10px;font-weight:bold;margin-left: 2px;"><br><br>-->
+	
+	</form>
+</div>
+
+
+
+<!--
+<style>
+	/* Center the loader */
+	#loader {
+	  position: absolute;
+	  left: 50%;
+	  top: 50%;
+	  z-index: 1;
+	  width: 150px;2px;
+	  height: 150px;
+	  margin: -75px 0 0 -75px;
+	  border: 16px solid #f3f3f3;
+	  border-radius: 50%;
+	  border-top: 16px solid #3498db;
+	  width: 120px;
+	  height: 120px;
+	  -webkit-animation: spin 2s linear infinite;
+	  animation: spin 2s linear infinite;
+	}
+
+	@-webkit-keyframes spin {
+	  0% { -webkit-transform: rotate(0deg); }
+	  100% { -webkit-transform: rotate(360deg); }
+	}
+
+	@keyframes spin {
+	  0% { transform: rotate(0deg); }
+	  100% { transform: rotate(360deg); }
+	}
+
+</style>
+
+<div class="spinner-border" role="status">
+	<span class="sr-only">Loading...</span>
+</div>
+
+
+
+  <p>{{ Analysis }}</p>
+  <p>{{ Samplename }}</p>
+  <p>{{ rlt }}</p>
+  <p>{{ Exp }}</p>
+   <p>{{ Samplelist }}</p>  
+
+  <p>{{ GTF }}</p>
+-->
+ 
+</body>
+</html>
+
